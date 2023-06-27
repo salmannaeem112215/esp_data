@@ -9,6 +9,28 @@ class DataController extends GetxController {
   final _stream = StreamController<String>.broadcast();
   final state = FetchingState.idol.obs;
   final datas = <Data>[].obs;
+  final deviceActive = false.obs;
+
+  String get latestTemp {
+    if (datas.isEmpty) {
+      return '0.0';
+    }
+    return datas[0].temperature.toStringAsFixed(1);
+  }
+
+  String get latestPress {
+    if (datas.isEmpty) {
+      return '0.0';
+    }
+    return datas[0].pressure.toStringAsFixed(1);
+  }
+
+  String get latestHumidity {
+    if (datas.isEmpty) {
+      return '0.0';
+    }
+    return datas[0].humidity.toStringAsFixed(1);
+  }
 
   @override
   void onReady() {
@@ -62,6 +84,8 @@ class DataController extends GetxController {
   Data add(Data d) {
     datas.insert(0, d);
     removeExpiredData();
+    deviceActive.value = true;
+    checkDeviceOffline();
     return d;
   }
 
@@ -76,6 +100,19 @@ class DataController extends GetxController {
       }
     }
     return result;
+  }
+
+  checkDeviceOffline() {
+    Future.delayed(const Duration(seconds: 10)).then((value) {
+      final status = datas[0].dateTime.isBefore(
+            DateTime.now().subtract(
+              const Duration(seconds: 20),
+            ),
+          );
+      if (deviceActive.value != status) {
+        deviceActive.value = false;
+      }
+    });
   }
 
   void removeExpiredData() {

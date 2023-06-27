@@ -1,5 +1,4 @@
 import 'package:esp_remote/headers.dart';
-import 'package:flutter/rendering.dart';
 
 class Body extends StatelessWidget {
   const Body({super.key});
@@ -15,55 +14,66 @@ class Body extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 8),
-          const Row(
+          Row(
             mainAxisSize: MainAxisSize.max,
             children: [
               Expanded(
-                child: CardTile(
-                  icon: IconConfig.device,
-                  bgColor: ColorConfig.cardColorLight,
-                  isDark: true,
-                  subText: 'Device',
-                  text: 'Active',
-                ),
+                child: Obx(() {
+                  dc.datas.length;
+                  return CardTile(
+                    icon: IconConfig.device,
+                    bgColor: ColorConfig.cardColorLight,
+                    isDark: dc.deviceActive.value ? true : false,
+                    subText: 'Device',
+                    text: dc.deviceActive.value ? 'Active' : 'Offline',
+                  );
+                }),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Expanded(
-                child: CardTile(
-                  icon: IconConfig.temperature,
-                  bgColor: ColorConfig.cardColorDark,
-                  subText: 'Temp- C',
-                  text: '37.3',
-                ),
+                child: Obx(() {
+                  dc.datas.length;
+                  return CardTile(
+                    icon: IconConfig.temperature,
+                    bgColor: ColorConfig.cardColorDark,
+                    subText: 'Temp- C',
+                    text: dc.latestTemp,
+                  );
+                }),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          const Row(
+          Row(
             mainAxisSize: MainAxisSize.max,
             children: [
               Expanded(
-                child: CardTile(
-                  icon: IconConfig.pressure,
-                  bgColor: ColorConfig.cardColorDark,
-                  subText: 'Pressure- Pa',
-                  text: '12131.23',
-                ),
+                child: Obx(() {
+                  dc.datas.length;
+                  return CardTile(
+                    icon: IconConfig.pressure,
+                    bgColor: ColorConfig.cardColorDark,
+                    subText: 'Pressure- Pa',
+                    text: dc.latestPress,
+                  );
+                }),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Expanded(
-                child: CardTile(
-                  icon: IconConfig.humidity,
-                  bgColor: ColorConfig.cardColorDark,
-                  isDark: false,
-                  subText: 'Humidity - %',
-                  text: '123123',
-                ),
+                child: Obx(() {
+                  dc.datas.length;
+                  return CardTile(
+                    icon: IconConfig.humidity,
+                    bgColor: ColorConfig.cardColorDark,
+                    isDark: true,
+                    subText: 'Humidity - %',
+                    text: dc.latestHumidity,
+                  );
+                }),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(dc.datas[0].pressure.toString()),
         ],
       ),
     );
