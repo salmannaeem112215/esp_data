@@ -6,12 +6,12 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    if (size.height < 450 && size.width > 200) {
+    if (size.height < 450 && size.width > 300) {
       return getResponsiveBody(450, size.width);
-    } else if (size.height > 450 && size.width < 200) {
-      return getResponsiveBody(size.height, 200);
-    } else if (size.height < 450 && size.width < 200) {
-      return getResponsiveBody(450, 200);
+    } else if (size.height > 450 && size.width < 300) {
+      return getResponsiveBody(size.height, 300);
+    } else if (size.height < 450 && size.width < 300) {
+      return getResponsiveBody(450, 300);
     } else {
       return const CustomScaffold(
         body: Body(),

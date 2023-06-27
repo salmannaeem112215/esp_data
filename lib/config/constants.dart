@@ -1,30 +1,12 @@
 import 'package:esp_remote/headers.dart';
 
-const kLightBg = Color(0xff465A61);
-const kDarkBg = Color(0xff293939);
-const kLightW = Color(0xffEDF5FF);
-const kDarkW = Color(0xffD5E8FE);
-const kLightp = Color(0xff76E2F8);
-const kDarkp = Color(0xff4BB9EC);
-
-const kBgGradeint = LinearGradient(
-  colors: [
-    kDarkBg,
-    kLightW,
-    Colors.white,
-  ],
-  begin: Alignment.bottomCenter,
-  end: Alignment.topCenter,
-);
-const kBtnGradeint = LinearGradient(
-  colors: [
-    // kDarkBg,
-    kDarkBg,
-    // kDarkW,
-    kDarkBg,
-    // kLightW,
-    // Colors.white,
-  ],
-  begin: Alignment.centerRight,
-  end: Alignment.centerLeft,
-);
+class ColorConfig {
+  static const greyLight = Color(0xFF676E74);
+  static const greyDark = Color(0xFF474F54);
+  static const yellowLight = Color(0xFFFDBF00);
+  static const yellowDark = Color(0xFFFF9100);
+  static const blueLight = Color(0xff64E1DC);
+  static const blueDark = Color(0xFF00C8C8);
+  static const cardColorLight = Color.fromARGB(255, 23, 133, 148);
+  static const cardColorDark = Color.fromARGB(255, 39, 60, 78);
+}

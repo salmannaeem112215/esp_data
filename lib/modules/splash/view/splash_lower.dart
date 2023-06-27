@@ -13,7 +13,7 @@ class SplashLower extends StatelessWidget {
               padding: const EdgeInsets.only(top: 50),
               child: ElevatedButton(
                 onPressed: () {
-                  DataSocketApi().stream;
+                  ToRoutes.toHome();
                 },
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
