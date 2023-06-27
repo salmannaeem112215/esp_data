@@ -14,7 +14,7 @@ class HomeScreen extends StatelessWidget {
       return getResponsiveBody(450, 300);
     } else {
       return const CustomScaffold(
-        body: Body(),
+        body: SafeArea(child: Body()),
       );
     }
   }

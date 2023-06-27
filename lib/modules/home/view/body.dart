@@ -23,9 +23,11 @@ class Body extends StatelessWidget {
                   return CardTile(
                     icon: IconConfig.device,
                     bgColor: ColorConfig.cardColorLight,
-                    isDark: dc.deviceActive.value ? true : false,
+                    isDark: dc.deviceActive,
+                    canTap: false,
                     subText: 'Device',
-                    text: dc.deviceActive.value ? 'Active' : 'Offline',
+                    textDark: 'Active',
+                    textLight: 'Offline',
                   );
                 }),
               ),
@@ -37,7 +39,9 @@ class Body extends StatelessWidget {
                     icon: IconConfig.temperature,
                     bgColor: ColorConfig.cardColorDark,
                     subText: 'Temp- C',
-                    text: dc.latestTemp,
+                    isDark: true.obs,
+                    textDark: dc.latestTemp.toStringAsFixed(1),
+                    textLight: dc.avgTemp.toStringAsFixed(1),
                   );
                 }),
               ),
@@ -54,7 +58,9 @@ class Body extends StatelessWidget {
                     icon: IconConfig.pressure,
                     bgColor: ColorConfig.cardColorDark,
                     subText: 'Pressure- Pa',
-                    text: dc.latestPress,
+                    isDark: true.obs,
+                    textDark: dc.latestPress.toStringAsFixed(1),
+                    textLight: dc.avgPress.toStringAsFixed(1),
                   );
                 }),
               ),
@@ -65,9 +71,10 @@ class Body extends StatelessWidget {
                   return CardTile(
                     icon: IconConfig.humidity,
                     bgColor: ColorConfig.cardColorDark,
-                    isDark: true,
+                    isDark: true.obs,
                     subText: 'Humidity - %',
-                    text: dc.latestHumidity,
+                    textDark: dc.latestHumidity.toStringAsFixed(1),
+                    textLight: dc.avgHumidity.toStringAsFixed(1),
                   );
                 }),
               ),
@@ -85,63 +92,84 @@ class CardTile extends StatelessWidget {
     super.key,
     required this.icon,
     this.bgColor = Colors.blueGrey,
-    this.isDark = true,
-    required this.text,
+    required this.textDark,
+    required this.textLight,
     required this.subText,
+    this.canTap = true,
+    required this.isDark,
   });
   final String icon;
   final Color bgColor;
-  final bool isDark;
-  final String text;
+  final String textDark;
+  final String textLight;
   final String subText;
+  final bool canTap;
+  final RxBool isDark;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 150,
-      child: ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bgColor.withOpacity(isDark ? 1 : 0.7),
-          elevation: isDark ? 10 : 0.1,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Image.asset(
-                icon,
-                height: 75,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      text,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 22,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      subText,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
+      child: Obx(
+        () => ElevatedButton(
+          onPressed: () => canTap ? isDark.value = !isDark.value : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: bgColor.withOpacity(isDark.value ? 1 : 0.7),
+            elevation: isDark.value ? 10 : 0.1,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Image.asset(
+                  icon,
+                  height: 75,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(width: 8),
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      canTap
+                          ? Obx(
+                              () => Text(
+                                isDark.value ? 'Latest' : 'Avg',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                      Obx(
+                        () => Text(
+                          isDark.value ? textDark : textLight,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 22,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        subText,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

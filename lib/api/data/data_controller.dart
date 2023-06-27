@@ -6,30 +6,62 @@ enum FetchingState { idol, loading, completed, error }
 
 class DataController extends GetxController {
   late Socket socket;
-  final _stream = StreamController<String>.broadcast();
   final state = FetchingState.idol.obs;
   final datas = <Data>[].obs;
   final deviceActive = false.obs;
 
-  String get latestTemp {
+  double get latestTemp {
     if (datas.isEmpty) {
-      return '0.0';
+      return 0;
     }
-    return datas[0].temperature.toStringAsFixed(1);
+    return datas[0].temperature;
   }
 
-  String get latestPress {
+  double get latestPress {
     if (datas.isEmpty) {
-      return '0.0';
+      return 0;
     }
-    return datas[0].pressure.toStringAsFixed(1);
+    return datas[0].pressure;
   }
 
-  String get latestHumidity {
+  double get latestHumidity {
     if (datas.isEmpty) {
-      return '0.0';
+      return 0;
     }
-    return datas[0].humidity.toStringAsFixed(1);
+    return datas[0].humidity;
+  }
+
+  double get avgTemp {
+    if (datas.isEmpty) {
+      return 0;
+    }
+    double avg = 0;
+    for (int i = 0; i < datas.length; i++) {
+      avg += datas[i].temperature;
+    }
+    return avg / datas.length;
+  }
+
+  double get avgPress {
+    if (datas.isEmpty) {
+      return 0;
+    }
+    double avg = 0;
+    for (int i = 0; i < datas.length; i++) {
+      avg += datas[i].pressure;
+    }
+    return avg / datas.length;
+  }
+
+  double get avgHumidity {
+    if (datas.isEmpty) {
+      return 0;
+    }
+    double avg = 0;
+    for (int i = 0; i < datas.length; i++) {
+      avg += datas[i].humidity;
+    }
+    return avg / datas.length;
   }
 
   @override
@@ -69,14 +101,21 @@ class DataController extends GetxController {
           },
           cancelOnError: true,
           onError: (error) {
-            print('Error in stream: $error');
+            ToRoutes.toSplash();
+            Get.snackbar('Server Error',
+                'Please Make Sure Server is Running. Restart App');
             state.value = FetchingState.error;
           },
         );
         socket.add(json.encode({'action': 'LOAD'}));
+        state.value = FetchingState.completed;
+        ToRoutes.toHome();
       } catch (e) {
         state.value = FetchingState.error;
-        print('Error on Stream .. Stream Closed $e');
+        ToRoutes.toSplash();
+
+        Get.snackbar(
+            'Server Error', 'Please Make Sure Server is Running. Restart App');
       }
     } else {}
   }
@@ -120,12 +159,11 @@ class DataController extends GetxController {
     DateTime currentTime = DateTime.now();
 
     // Calculate the expiry time (1 day ago)
-    DateTime expiryTime = currentTime.subtract(Duration(days: 1));
+    DateTime expiryTime = currentTime.subtract(const Duration(days: 1));
 
     for (int i = datas.length - 1; i >= 0; i--) {
       if (datas[i].dateTime.isBefore(expiryTime)) {
         datas.removeAt(i);
-        print('Index Remoev');
       } else {
         break;
       }

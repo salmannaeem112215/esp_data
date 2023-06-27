@@ -48,7 +48,7 @@ class Payload {
 
   Payload({
     this.message = '',
-    dynamic? data,
+    dynamic data,
   }) : data = data ?? {};
 
   factory Payload.fromJson(Map<String, dynamic> json) {

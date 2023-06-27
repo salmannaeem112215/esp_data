@@ -41,6 +41,8 @@ export './modules/template/binding/template_binding.dart';
 export './modules/template/controller/template_controller.dart';
 export './modules/template/template_screen.dart';
 
+export './modules/widgets/custom_button.dart';
+
 //data
 export './api/data/data.dart';
 export './api/data/data_socket_api.dart';
