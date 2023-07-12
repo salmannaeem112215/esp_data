@@ -5,10 +5,22 @@ import 'dart:io';
 enum FetchingState { idol, loading, completed, error }
 
 class DataController extends GetxController {
+  static const int kEespDataSendingDelay = 10; // by default set to 10 secs
   late Socket socket;
   final state = FetchingState.idol.obs;
+  bool dataSending = false;
   final datas = <Data>[].obs;
   final deviceActive = false.obs;
+
+  Timer? timer;
+  void dataRecived() {
+    // will set Device Offline after 5 second and if withn in 5 sec data recived will reset time
+    deviceActive.value = true;
+    timer?.cancel(); // Cancel the previous timer, if any
+    timer = Timer(const Duration(seconds: kEespDataSendingDelay), () {
+      deviceActive.value = false;
+    });
+  }
 
   double get latestTemp {
     if (datas.isEmpty) {
@@ -121,12 +133,11 @@ class DataController extends GetxController {
   }
 
   Data add(Data d) {
-    print('HI');
     datas.insert(0, d);
     removeExpiredData();
     deviceActive.value = true;
-    print('set value to ture');
-    checkDeviceOffline();
+    dataSending = true;
+    dataRecived();
     return d;
   }
 
@@ -141,21 +152,6 @@ class DataController extends GetxController {
       }
     }
     return result;
-  }
-
-  checkDeviceOffline() {
-    Future.delayed(const Duration(seconds: 10)).then((value) {
-      print('Calledd');
-      final status = datas[0].dateTime.isBefore(
-            DateTime.now().subtract(
-              const Duration(seconds: 5),
-            ),
-          );
-      print(status);
-      if (deviceActive.value == status) {
-        deviceActive.value = false;
-      }
-    });
   }
 
   void removeExpiredData() {

@@ -8,6 +8,8 @@ export 'package:connectivity_plus/connectivity_plus.dart';
 export 'package:flutter/services.dart';
 export 'package:web_socket_channel/web_socket_channel.dart';
 
+export 'package:fl_chart/fl_chart.dart';
+
 // Routes
 export './routes/app_pages.dart';
 export './routes/to_routes.dart';
@@ -31,6 +33,8 @@ export './modules/splash/splash_screen.dart';
 export 'modules/home/binding/home_binding.dart';
 export 'modules/home/controller/home_controller.dart';
 export './modules/home/home_screen.dart';
+export './modules/home/view/card_tile.dart';
+export "./modules/home/view/data_graph.dart";
 
 // network
 export 'modules/network/binding/network_binding.dart';

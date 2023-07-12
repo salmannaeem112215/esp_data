@@ -1,5 +1,5 @@
 import 'package:esp_remote/headers.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 
 class DataGraph extends StatelessWidget {
   final List<Data> dats;
@@ -12,55 +12,85 @@ class DataGraph extends StatelessWidget {
     final gm = adjustDataWithNulls(dats);
     final adjustedDats = gm.data.reversed.toList();
 
-    return LineChart(
-      LineChartData(
-        minY: gm.min - 5,
-        maxY: gm.max + 5,
-        lineBarsData: [
-          LineChartBarData(
-            spots: adjustedDats
-                .asMap()
-                .map((index, data) => MapEntry(
-                      index,
-                      FlSpot(index.toDouble(), data?.temperature ?? 0),
-                    ))
-                .values
-                .toList(),
-            preventCurveOverShooting: true,
-            isCurved: true,
-            color: ColorConfig.cardColorDark,
-            dotData: const FlDotData(show: false),
-            curveSmoothness: 0.5,
-            belowBarData: BarAreaData(show: true),
+    return SafeArea(
+      child: LineChart(
+        LineChartData(
+          minY: gm.min - 5,
+          maxY: gm.max + 5,
+          lineTouchData: lineTouchData(),
+          lineBarsData: [temperatureLineBar(adjustedDats)],
+          titlesData: sideTilesData(),
+          gridData: const FlGridData(show: false),
+        ),
+      ),
+    );
+  }
+
+  FlTitlesData sideTilesData() {
+    return FlTitlesData(
+        topTitles: const AxisTitles(
+          drawBelowEverything: true,
+        ),
+        rightTitles: const AxisTitles(
+          drawBelowEverything: true,
+        ),
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: (value, d) => const SizedBox(),
           ),
-        ],
-        titlesData: FlTitlesData(
-            topTitles: const AxisTitles(
-              drawBelowEverything: true,
+        ),
+        leftTitles: AxisTitles(
+          axisNameWidget: const Text(
+            'Temperature (C°)',
+          ),
+          axisNameSize: 30,
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: (value, d) => Text(
+              value.toStringAsFixed(0),
+              maxLines: 1,
             ),
-            rightTitles: const AxisTitles(
-              drawBelowEverything: true,
-            ),
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, d) => const SizedBox(),
-              ),
-            ),
-            leftTitles: AxisTitles(
-              axisNameWidget: const Text(
-                'Temperature (C°)',
-              ),
-              axisNameSize: 30,
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, d) => Text(
-                  value.toStringAsFixed(0),
-                  maxLines: 1,
-                ),
-              ),
-            )),
-        gridData: const FlGridData(show: false),
+          ),
+        ));
+  }
+
+  LineChartBarData temperatureLineBar(List<Data?> adjustedDats) {
+    return LineChartBarData(
+      spots: adjustedDats
+          .asMap()
+          .map((index, data) => MapEntry(
+                index,
+                FlSpot(index.toDouble(), data?.temperature ?? 0),
+              ))
+          .values
+          .toList(),
+      preventCurveOverShooting: true,
+      isCurved: true,
+      color: ColorConfig.cardColorDark,
+      dotData: const FlDotData(show: false),
+      curveSmoothness: 0.5,
+      belowBarData: BarAreaData(show: true),
+    );
+  }
+
+  LineTouchData lineTouchData() {
+    return LineTouchData(
+      enabled: true,
+      touchTooltipData: LineTouchTooltipData(
+        tooltipBgColor: ColorConfig.cardColorDark.withOpacity(0.9),
+        getTooltipItems: (List<LineBarSpot> touchedSpots) {
+          return touchedSpots.map((LineBarSpot touchedSpot) {
+            final spotData = touchedSpot;
+            final dateTime =
+                dats[dats.length - 1 - spotData.x.toInt()].dateTime;
+            String formattedTime = DateFormat('hh:mm a').format(dateTime);
+            return LineTooltipItem(
+              '${spotData.y.toStringAsFixed(1)} C°\n$formattedTime',
+              const TextStyle(color: Colors.white),
+            );
+          }).toList();
+        },
       ),
     );
   }
