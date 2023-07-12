@@ -121,9 +121,11 @@ class DataController extends GetxController {
   }
 
   Data add(Data d) {
+    print('HI');
     datas.insert(0, d);
     removeExpiredData();
     deviceActive.value = true;
+    print('set value to ture');
     checkDeviceOffline();
     return d;
   }
@@ -143,12 +145,14 @@ class DataController extends GetxController {
 
   checkDeviceOffline() {
     Future.delayed(const Duration(seconds: 10)).then((value) {
+      print('Calledd');
       final status = datas[0].dateTime.isBefore(
             DateTime.now().subtract(
-              const Duration(seconds: 20),
+              const Duration(seconds: 5),
             ),
           );
-      if (deviceActive.value != status) {
+      print(status);
+      if (deviceActive.value == status) {
         deviceActive.value = false;
       }
     });

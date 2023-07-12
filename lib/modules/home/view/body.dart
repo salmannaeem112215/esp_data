@@ -1,4 +1,5 @@
 import 'package:esp_remote/headers.dart';
+import 'package:esp_remote/modules/home/view/data_graph.dart';
 
 class Body extends StatelessWidget {
   const Body({super.key});
@@ -20,19 +21,24 @@ class Body extends StatelessWidget {
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
               ),
+              shrinkWrap: true,
               children: [
                 Padding(
                   padding: const EdgeInsets.only(right: 3, bottom: 3),
                   child: Obx(() {
                     dc.datas.length;
+                    dc.deviceActive.value;
+                    print('Device Active ${dc.deviceActive.value}');
+                    print('CHanged');
                     return CardTile(
+                      key: UniqueKey(),
                       icon: IconConfig.device,
                       bgColor: ColorConfig.cardColorLight,
                       isDark: dc.deviceActive,
                       canTap: false,
                       subText: 'Device',
-                      textDark: 'Active',
-                      textLight: 'Offline',
+                      textDark: dc.deviceActive.value ? 'Active' : 'Offline',
+                      textLight: dc.deviceActive.value ? 'Active' : 'Offline',
                     );
                   }),
                 ),
@@ -81,7 +87,19 @@ class Body extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
+          Obx(() {
+            dc.datas.length;
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: DataGraph(
+                  dats: dc.datas,
+                ),
+              ),
+            );
+          }),
+          const SizedBox(height: 16),
         ],
       ),
     );
